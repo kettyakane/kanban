@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardContent, CardHeader, makeStyles } from "@material-ui/core";
+import { Card, TextField, makeStyles } from "@material-ui/core";
 
 const useStyles = makeStyles(() => ({
   card: {
@@ -10,16 +10,26 @@ const useStyles = makeStyles(() => ({
 }));
 
 interface MyCardProps {
+  id: number;
   title: string;
   content: string;
+  onChangeTitle: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChangeContent: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const MyCard = (props: MyCardProps) => {
   const classes = useStyles();
   return (
     <Card className={classes.card}>
-      <CardHeader title={props.title} />
-      <CardContent>{props.content}</CardContent>
+      <TextField value={props.title} id={props.id.toString()} onChange={props.onChangeTitle} />
+      <TextField
+        multiline
+        minRows={2}
+        variant="standard"
+        id={props.id.toString()}
+        value={props.content}
+        onChange={props.onChangeContent}
+      />
     </Card>
   );
 };

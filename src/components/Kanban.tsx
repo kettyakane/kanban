@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import { Box, Typography, makeStyles } from "@material-ui/core";
+import { Box, IconButton, Typography, makeStyles } from "@material-ui/core";
+import AddIcon from "@material-ui/icons/Add";
+
 import Lane, { Task } from "./Lane";
 
 const useStyles = makeStyles(() => ({
@@ -12,15 +14,8 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const initialTodoTasks = [
-  { id: 1, title: "テスト1", content: "テストの内容" },
-  { id: 2, title: "テスト2", content: "テストの内容" },
-];
-
-const initialDoneTasks = [
-  { id: 3, title: "テスト3", content: "テストの内容" },
-  { id: 4, title: "テスト4", content: "テストの内容" },
-];
+const initialTodoTasks = [{ id: 1, title: "テスト1", content: "テストの内容" }];
+const initialDoneTasks: Task[] = [];
 
 const Kanban = () => {
   const classes = useStyles();
@@ -30,9 +25,9 @@ const Kanban = () => {
 
   const onClickAddCardToTodo = () => {
     const addTodoTask = {
-      id: todoTasks.length,
-      title: `テスト${todoTasks.length}`,
-      content: "テスト内容",
+      id: todoTasks.length + 1,
+      title: "",
+      content: "",
     };
 
     setTodoTasks(todoTasks.concat(addTodoTask));
@@ -40,20 +35,51 @@ const Kanban = () => {
 
   const onClickAddCardToDone = () => {
     const addDoneTask = {
-      id: doneTasks.length,
-      title: `テスト${doneTasks.length}`,
-      content: "テスト内容",
+      id: doneTasks.length + 1,
+      title: "",
+      content: "",
     };
 
     setDoneTasks(doneTasks.concat(addDoneTask));
+  };
+
+  const onChangeCardTitle = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const id = Number(event.target.id) - 1;
+    const newTodoTasks = [...todoTasks];
+    newTodoTasks[id].title = event.target.value;
+
+    setTodoTasks(newTodoTasks);
+  };
+
+  const onChangeCardContent = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const id = Number(event.target.id) - 1;
+    const newTodoTasks = [...todoTasks];
+    newTodoTasks[id].content = event.target.value;
+
+    setTodoTasks(newTodoTasks);
   };
 
   return (
     <>
       <Typography variant="h5">kettyタスク一覧</Typography>
       <Box className={classes.kanban}>
-        <Lane title="todo" tasks={todoTasks} onClick={onClickAddCardToTodo} />
-        <Lane title="done" tasks={doneTasks} onClick={onClickAddCardToDone} />
+        <Lane
+          title="todo"
+          tasks={todoTasks}
+          onClick={onClickAddCardToTodo}
+          onChangeCardTitle={onChangeCardTitle}
+          onChangeCardContent={onChangeCardContent}
+        />
+        <Lane
+          title="done"
+          tasks={doneTasks}
+          onClick={onClickAddCardToDone}
+          onChangeCardTitle={onChangeCardTitle}
+          onChangeCardContent={onChangeCardContent}
+        />
+        <IconButton>
+          <AddIcon />
+        </IconButton>
       </Box>
     </>
   );

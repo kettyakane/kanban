@@ -24,6 +24,8 @@ interface LaneProps {
   title: string;
   tasks: Task[];
   onClick: React.MouseEventHandler<HTMLButtonElement>;
+  onChangeCardTitle: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChangeCardContent: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const Lane = (props: LaneProps) => {
@@ -34,7 +36,14 @@ const Lane = (props: LaneProps) => {
       <Box className={classes.lane}>
         <Typography variant="h5">{props.title}</Typography>
         {props.tasks.map((x) => (
-          <MyCard key={x.id} title={x.title} content={x.content} />
+          <MyCard
+            key={x.id}
+            id={x.id}
+            title={x.title}
+            content={x.content}
+            onChangeTitle={props.onChangeCardTitle}
+            onChangeContent={props.onChangeCardContent}
+          />
         ))}
         <IconButton onClick={props.onClick}>
           <AddIcon />
