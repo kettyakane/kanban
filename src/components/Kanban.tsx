@@ -1,8 +1,14 @@
 import React, { useState } from "react";
 import { Box, IconButton, Typography, makeStyles } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
-import { DragDropContext } from "react-beautiful-dnd";
+import { DragDropContext, Droppable } from "react-beautiful-dnd";
 import Lane, { Task } from "./Lane";
+
+interface Column {
+  id: number;
+  title: string;
+  tasks: Task[];
+}
 
 const useStyles = makeStyles(() => ({
   kanban: {
@@ -12,10 +18,26 @@ const useStyles = makeStyles(() => ({
     overflowY: "scroll",
     overflowX: "hidden",
   },
+  Lane: {
+    display: "inline-flex",
+  },
 }));
 
 const initialTodoTasks = [{ id: 1, title: "テスト1", content: "テストの内容" }];
 const initialDoneTasks: Task[] = [];
+
+const initialColumns: Column[] = [
+  {
+    id: 1,
+    title: "todo",
+    tasks: initialTodoTasks,
+  },
+  {
+    id: 2,
+    title: "done",
+    tasks: initialDoneTasks,
+  },
+];
 
 const reorder = (list: Task[], startIndex: number, endIndex: number): Task[] => {
   const result = Array.from(list);
@@ -29,38 +51,53 @@ const Kanban = () => {
   const classes = useStyles();
 
   const [todoTasks, setTodoTasks] = useState<Task[]>(initialTodoTasks);
-  const [doneTasks, setDoneTasks] = useState<Task[]>(initialDoneTasks);
 
-  const onClickAddCardToTodo = () => {
-    const addTodoTask = {
-      id: todoTasks.length + 1,
-      lane: "",
+  const [columns, setColumns] = useState<Column[]>(initialColumns);
+
+  const onClickAddColumn = () => {
+    const newColumn: Column = {
+      id: columns.length + 1,
+      title: "new lane",
+      tasks: [],
+    };
+
+    setColumns(columns.concat(newColumn));
+  };
+
+  const onClickAddCard = (columnId: number) => {
+    const newId = columns[columnId - 1].tasks.length + 1;
+    const addTask = {
+      id: newId,
       title: "",
       content: "",
     };
 
-    setTodoTasks(todoTasks.concat(addTodoTask));
-  };
-
-  const onClickAddCardToDone = () => {
-    const addDoneTask = {
-      id: doneTasks.length + 1,
-      title: "",
-      content: "",
+    const updatedColumns = columns;
+    updatedColumns[columnId - 1] = {
+      ...updatedColumns[columnId - 1],
+      tasks: updatedColumns[columnId - 1].tasks.concat(addTask),
     };
 
-    setDoneTasks(doneTasks.concat(addDoneTask));
+    setColumns(updatedColumns);
   };
 
-  const onChangeCardTitle = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const newTodoTasks = todoTasks.map((x) => {
-      if (x.id === Number(event.target.id)) {
-        return { id: x.id, title: event.target.value, content: x.content };
+  const onChangeCardTitle = (columnId: number, taskId: number, value: string): void => {
+    const tasks = columns[columnId - 1].tasks;
+    const newTasks = tasks.map((task) => {
+      if (task.id === taskId) {
+        return { ...task, title: value };
       }
-      return x;
+      return task;
     });
 
-    setTodoTasks(newTodoTasks);
+    // setTodoTasks(newTodoTasks);
+    const updatedColumns = columns;
+    updatedColumns[columnId - 1] = {
+      ...updatedColumns[columnId - 1],
+      tasks: newTasks,
+    };
+
+    setColumns(updatedColumns);
   };
 
   const onChangeCardContent = (event: React.ChangeEvent<HTMLInputElement>): void => {
@@ -84,29 +121,36 @@ const Kanban = () => {
     setTodoTasks(tasks);
   };
 
+  console.log(columns);
+
   return (
     <>
       <Typography variant="h5">kettyタスク一覧</Typography>
       <DragDropContext onDragEnd={onDragEnd}>
-        <Box className={classes.kanban}>
-          <Lane
-            title="todo"
-            tasks={todoTasks}
-            onClick={onClickAddCardToTodo}
-            onChangeCardTitle={onChangeCardTitle}
-            onChangeCardContent={onChangeCardContent}
-          />
-          <Lane
-            title="done"
-            tasks={doneTasks}
-            onClick={onClickAddCardToDone}
-            onChangeCardTitle={onChangeCardTitle}
-            onChangeCardContent={onChangeCardContent}
-          />
-          <IconButton>
-            <AddIcon />
-          </IconButton>
-        </Box>
+        <Droppable droppableId="kanban" type="COLUMN" direction="horizontal">
+          {(provided) => (
+            <Box className={classes.kanban}>
+              <div ref={provided.innerRef} {...provided.droppableProps}>
+                <Box className={classes.Lane}>
+                  {columns.map((column) => (
+                    <Lane
+                      key={column.id}
+                      id={column.id}
+                      title={column.title}
+                      tasks={column.tasks}
+                      onClick={onClickAddCard}
+                      onChangeCardTitle={onChangeCardTitle}
+                      onChangeCardContent={onChangeCardContent}
+                    />
+                  ))}
+                </Box>
+              </div>
+              <IconButton onClick={onClickAddColumn}>
+                <AddIcon />
+              </IconButton>
+            </Box>
+          )}
+        </Droppable>
       </DragDropContext>
     </>
   );

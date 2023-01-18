@@ -22,10 +22,11 @@ export interface Task {
 }
 
 interface LaneProps {
+  id: number;
   title: string;
   tasks: Task[];
-  onClick: React.MouseEventHandler<HTMLButtonElement>;
-  onChangeCardTitle: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onClick: (columnId: number) => void;
+  onChangeCardTitle: (columnId: number, taskId: number, value: string) => void;
   onChangeCardContent: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -45,14 +46,24 @@ const Lane = (props: LaneProps) => {
                   id={x.id}
                   title={x.title}
                   content={x.content}
-                  onChangeTitle={props.onChangeCardTitle}
+                  onChangeTitle={(event) => {
+                    props.onChangeCardTitle(
+                      props.id,
+                      Number(event.target.id) ?? 0,
+                      event.target.value
+                    );
+                  }}
                   onChangeContent={props.onChangeCardContent}
                   index={index}
                 />
               ))}
               {provided.placeholder}
             </div>
-            <IconButton onClick={props.onClick}>
+            <IconButton
+              onClick={() => {
+                props.onClick(props.id);
+              }}
+            >
               <AddIcon />
             </IconButton>
           </Box>
