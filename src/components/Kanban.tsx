@@ -25,7 +25,6 @@ const useStyles = makeStyles(() => ({
 
 const initialTodoTasks = [{ id: 1, title: "テスト1", content: "テストの内容" }];
 const initialDoneTasks: Task[] = [];
-
 const initialColumns: Column[] = [
   {
     id: 1,
@@ -51,7 +50,6 @@ const Kanban = () => {
   const classes = useStyles();
 
   const [todoTasks, setTodoTasks] = useState<Task[]>(initialTodoTasks);
-
   const [columns, setColumns] = useState<Column[]>(initialColumns);
 
   const onClickAddColumn = () => {
@@ -72,12 +70,8 @@ const Kanban = () => {
       content: "",
     };
 
-    const updatedColumns = columns;
-    updatedColumns[columnId - 1] = {
-      ...updatedColumns[columnId - 1],
-      tasks: updatedColumns[columnId - 1].tasks.concat(addTask),
-    };
-
+    const updatedColumns = [...columns];
+    updatedColumns[columnId - 1].tasks.push(addTask);
     setColumns(updatedColumns);
   };
 
@@ -90,25 +84,23 @@ const Kanban = () => {
       return task;
     });
 
-    // setTodoTasks(newTodoTasks);
-    const updatedColumns = columns;
-    updatedColumns[columnId - 1] = {
-      ...updatedColumns[columnId - 1],
-      tasks: newTasks,
-    };
-
+    const updatedColumns = [...columns];
+    updatedColumns[columnId - 1].tasks = newTasks;
     setColumns(updatedColumns);
   };
 
-  const onChangeCardContent = (event: React.ChangeEvent<HTMLInputElement>): void => {
-    const newTodoTasks = todoTasks.map((x) => {
-      if (x.id === Number(event.target.id)) {
-        return { id: x.id, title: x.title, content: event.target.value };
+  const onChangeCardContent = (columnId: number, taskId: number, value: string): void => {
+    const tasks = columns[columnId - 1].tasks;
+    const newTasks = tasks.map((task) => {
+      if (task.id === taskId) {
+        return { ...task, content: value };
       }
-      return x;
+      return task;
     });
 
-    setTodoTasks(newTodoTasks);
+    const updatedColumns = [...columns];
+    updatedColumns[columnId - 1].tasks = newTasks;
+    setColumns(updatedColumns);
   };
 
   const onDragEnd = (result: any) => {
@@ -120,8 +112,6 @@ const Kanban = () => {
 
     setTodoTasks(tasks);
   };
-
-  console.log(columns);
 
   return (
     <>
@@ -143,6 +133,7 @@ const Kanban = () => {
                       onChangeCardContent={onChangeCardContent}
                     />
                   ))}
+                  {provided.placeholder}
                 </Box>
               </div>
               <IconButton onClick={onClickAddColumn}>

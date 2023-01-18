@@ -27,7 +27,7 @@ interface LaneProps {
   tasks: Task[];
   onClick: (columnId: number) => void;
   onChangeCardTitle: (columnId: number, taskId: number, value: string) => void;
-  onChangeCardContent: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onChangeCardContent: (columnId: number, taskId: number, value: string) => void;
 }
 
 const Lane = (props: LaneProps) => {
@@ -53,7 +53,13 @@ const Lane = (props: LaneProps) => {
                       event.target.value
                     );
                   }}
-                  onChangeContent={props.onChangeCardContent}
+                  onChangeContent={(event) => {
+                    props.onChangeCardContent(
+                      props.id,
+                      Number(event.target.id) ?? 0,
+                      event.target.value
+                    );
+                  }}
                   index={index}
                 />
               ))}
