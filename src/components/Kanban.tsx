@@ -13,13 +13,13 @@ interface Column {
 const useStyles = makeStyles(() => ({
   kanban: {
     display: "flex",
-    height: "700px",
     backgroundColor: "#63abd4",
     overflowY: "scroll",
     overflowX: "hidden",
   },
   Lane: {
     display: "inline-flex",
+    height: "700px",
   },
 }));
 
