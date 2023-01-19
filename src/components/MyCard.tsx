@@ -12,6 +12,7 @@ const useStyles = makeStyles(() => ({
 
 interface MyCardProps {
   id: number;
+  lane: string;
   title: string;
   content: string;
   index: number;
@@ -22,7 +23,7 @@ interface MyCardProps {
 const MyCard = (props: MyCardProps) => {
   const classes = useStyles();
   return (
-    <Draggable key={props.id.toString()} draggableId={props.id.toString()} index={props.index}>
+    <Draggable draggableId={`${props.lane}_${props.index.toString()}`} index={props.index}>
       {(provided) => (
         <Card
           className={classes.card}

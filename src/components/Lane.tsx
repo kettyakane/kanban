@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, IconButton, Typography, makeStyles } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
-import { Droppable } from "react-beautiful-dnd";
+import { DraggableStateSnapshot, Droppable, DroppableProvided } from "react-beautiful-dnd";
 import MyCard from "./MyCard";
 
 const useStyles = makeStyles(() => ({
@@ -36,14 +36,15 @@ const Lane = (props: LaneProps) => {
   return (
     <>
       <Droppable droppableId={props.title}>
-        {(provided) => (
+        {(provided: DroppableProvided) => (
           <Box className={classes.lane}>
             <Typography variant="h5">{props.title}</Typography>
             <div ref={provided.innerRef} {...provided.droppableProps}>
               {props.tasks.map((x, index) => (
                 <MyCard
-                  key={x.id}
+                  key={index}
                   id={x.id}
+                  lane={props.title}
                   title={x.title}
                   content={x.content}
                   onChangeTitle={(event) => {
