@@ -12,9 +12,9 @@ const useStyles = makeStyles(() => ({
 
 interface MyCardProps {
   id: number;
-  lane: string;
   title: string;
   content: string;
+  laneTitle: string;
   index: number;
   onChangeTitle: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onChangeContent: (event: React.ChangeEvent<HTMLInputElement>) => void;
@@ -23,7 +23,7 @@ interface MyCardProps {
 const MyCard = (props: MyCardProps) => {
   const classes = useStyles();
   return (
-    <Draggable draggableId={`${props.lane}_${props.index.toString()}`} index={props.index}>
+    <Draggable draggableId={`${props.laneTitle}_${props.index.toString()}`} index={props.index}>
       {(provided) => (
         <Card
           className={classes.card}

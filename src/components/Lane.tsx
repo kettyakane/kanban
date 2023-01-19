@@ -1,8 +1,8 @@
-import React from "react";
 import { Box, IconButton, Typography, makeStyles } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
-import { DraggableStateSnapshot, Droppable, DroppableProvided } from "react-beautiful-dnd";
+import { Droppable, DroppableProvided } from "react-beautiful-dnd";
 import MyCard from "./MyCard";
+import { Task } from "../interface";
 
 const useStyles = makeStyles(() => ({
   lane: {
@@ -15,20 +15,14 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export interface Task {
-  id: number;
-  title: string;
-  content: string;
-}
-
-interface LaneProps {
-  id: number;
+type LaneProps = {
+  laneId: number;
   title: string;
   tasks: Task[];
   onClick: (columnId: number) => void;
   onChangeCardTitle: (columnId: number, taskId: number, value: string) => void;
   onChangeCardContent: (columnId: number, taskId: number, value: string) => void;
-}
+};
 
 const Lane = (props: LaneProps) => {
   const classes = useStyles();
@@ -44,19 +38,19 @@ const Lane = (props: LaneProps) => {
                 <MyCard
                   key={index}
                   id={x.id}
-                  lane={props.title}
                   title={x.title}
                   content={x.content}
+                  laneTitle={props.title}
                   onChangeTitle={(event) => {
                     props.onChangeCardTitle(
-                      props.id,
+                      props.laneId,
                       Number(event.target.id) ?? 0,
                       event.target.value
                     );
                   }}
                   onChangeContent={(event) => {
                     props.onChangeCardContent(
-                      props.id,
+                      props.laneId,
                       Number(event.target.id) ?? 0,
                       event.target.value
                     );
@@ -68,7 +62,7 @@ const Lane = (props: LaneProps) => {
             </div>
             <IconButton
               onClick={() => {
-                props.onClick(props.id);
+                props.onClick(props.laneId);
               }}
             >
               <AddIcon />

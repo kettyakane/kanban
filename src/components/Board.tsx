@@ -1,17 +1,13 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Box, IconButton, Typography, makeStyles } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
-import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
-import Lane, { Task } from "./Lane";
-
-interface Column {
-  id: number;
-  title: string;
-  tasks: Task[];
-}
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
+import Lane from "./Lane";
+import { LaneContent } from "../interface";
+import { initialLaneContents } from "../data/data";
 
 const useStyles = makeStyles(() => ({
-  kanban: {
+  board: {
     display: "flex",
     backgroundColor: "#63abd4",
     overflowY: "scroll",
@@ -23,36 +19,13 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const initialTodoTasks = [{ id: 1, title: "テスト1", content: "テストの内容" }];
-const initialDoneTasks: Task[] = [];
-const initialColumns: Column[] = [
-  {
-    id: 1,
-    title: "todo",
-    tasks: initialTodoTasks,
-  },
-  {
-    id: 2,
-    title: "done",
-    tasks: initialDoneTasks,
-  },
-];
-
-const reorderTasks = (list: Task[], startIndex: number, endIndex: number): Task[] => {
-  const result = Array.from(list);
-  const [removed] = result.splice(startIndex, 1);
-  result.splice(endIndex, 0, removed);
-
-  return result;
-};
-
-const reorderColumns = (
-  columns: Column[],
+const reorderContents = (
+  columns: LaneContent[],
   startColumn: string,
   endColumn: string,
   startIndex: number,
   endIndex: number
-): Column[] => {
+): LaneContent[] => {
   if (startColumn === endColumn) {
     const tasks = columns.filter((column) => column.title === startColumn)[0].tasks;
     const [removed] = tasks.splice(startIndex, 1);
@@ -97,18 +70,18 @@ const reorderColumns = (
   return updatedColumns;
 };
 
-const Kanban = () => {
+const Board = () => {
   const classes = useStyles();
-  const [columns, setColumns] = useState<Column[]>(initialColumns);
+  const [columns, setColumns] = useState<LaneContent[]>(initialLaneContents);
 
   const onClickAddColumn = () => {
-    const newColumn: Column = {
+    const newLane: LaneContent = {
       id: columns.length + 1,
       title: "new lane",
       tasks: [],
     };
 
-    setColumns(columns.concat(newColumn));
+    setColumns(columns.concat(newLane));
   };
 
   const onClickAddCard = (columnId: number) => {
@@ -153,7 +126,6 @@ const Kanban = () => {
   };
 
   const onDragEnd = (result: DropResult) => {
-    console.log(result);
     // 変更先がnullの場合
     if (!result.destination) {
       return;
@@ -169,7 +141,7 @@ const Kanban = () => {
       return;
     }
 
-    const updatedColumns = reorderColumns(
+    const updatedColumns = reorderContents(
       columns,
       sourceColumn,
       destinationColumn,
@@ -184,12 +156,12 @@ const Kanban = () => {
     <>
       <Typography variant="h5">kettyタスク一覧</Typography>
       <DragDropContext onDragEnd={onDragEnd}>
-        <Box className={classes.kanban}>
+        <Box className={classes.board}>
           <Box className={classes.Lane}>
             {columns.map((column) => (
               <Lane
                 key={column.id}
-                id={column.id}
+                laneId={column.id}
                 title={column.title}
                 tasks={column.tasks}
                 onClick={onClickAddCard}
@@ -207,4 +179,4 @@ const Kanban = () => {
   );
 };
 
-export default Kanban;
+export default Board;
